@@ -1,0 +1,30 @@
+name: Apple builds
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Test macOS app
+        run: >-
+          xcodebuild test
+          -project ShichidaMemoryCards.xcodeproj
+          -scheme "Shichida Memory Cards macOS"
+          -destination "platform=macOS"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Build iOS app
+        run: >-
+          xcodebuild build
+          -project ShichidaMemoryCards.xcodeproj
+          -scheme "Shichida Memory Cards iOS"
+          -destination "generic/platform=iOS Simulator"
+          CODE_SIGNING_ALLOWED=NO
