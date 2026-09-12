@@ -157,17 +157,17 @@ jobs:
           ## Test Shichida Memory Cards beta ${ARTIFACT_LABEL}
 
           - **macOS:** Download the macOS artifact, unzip it, then Control-click the app and select **Open**. It has an ad-hoc signature and is not notarized, so Gatekeeper can require **System Settings → Privacy & Security → Open Anyway**.
-          - **iOS Simulator:** Download and unzip the simulator artifact, boot a simulator, then run `xcrun simctl install booted "Shichida Memory Cards iOS.app"`.
+          - **iOS Simulator:** Download and unzip the simulator artifact, boot a simulator, then run \`xcrun simctl install booted "Shichida Memory Cards iOS.app"\`.
 
-          Both artifacts expire after 7 days. A device-installable IPA is also produced when the protected beta signing environment is enabled for a trusted branch.
+          Both artifacts expire after 7 days. A device-installable IPA can also be produced by manually running this workflow from the protected main branch when beta signing is enabled.
           EOF
 
   signed-ios:
     name: Build signed iOS IPA
     if: >-
       vars.ENABLE_SIGNED_BETA == 'true' &&
-      (github.event_name == 'workflow_dispatch' ||
-      github.event.pull_request.head.repo.full_name == github.repository)
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main'
     runs-on: macos-26
     environment: beta
     permissions:
@@ -201,8 +201,8 @@ jobs:
           keychain_path="$RUNNER_TEMP/beta-signing.keychain-db"
           keychain_password="$(openssl rand -hex 24)"
 
-          printf '%s' "$CERTIFICATE_BASE64" | base64 --decode > "$certificate_path"
-          printf '%s' "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$profile_path"
+          printf '%s' "$CERTIFICATE_BASE64" | base64 -D > "$certificate_path"
+          printf '%s' "$PROVISIONING_PROFILE_BASE64" | base64 -D > "$profile_path"
 
           security create-keychain -p "$keychain_password" "$keychain_path"
           security set-keychain-settings -lut 21600 "$keychain_path"
@@ -334,10 +334,11 @@ jobs:
             - ${signedStatus}
 
             Artifacts expire after 7 days. See the run summary for installation instructions.`
-            const { data: comments } = await github.rest.issues.listComments({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
+              per_page: 100,
             })
             const previous = comments.find(comment =>
               comment.user.type === 'Bot' && comment.body.includes(marker)

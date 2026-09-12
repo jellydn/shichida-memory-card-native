@@ -47,7 +47,7 @@ The workflow does not pass secrets to these builds. Fork pull requests receive t
 
 ### Optional signed iOS beta
 
-Trusted branches can also produce an ad hoc IPA for registered test devices. Create a GitHub environment named `beta`, restrict its deployment branches to trusted repository branches, and add these environment secrets:
+Manual workflow runs from the protected `main` branch can also produce an ad hoc IPA for registered test devices. Pull request code never receives signing credentials. Create a GitHub environment named `beta`, restrict it to the protected `main` branch, and add these environment secrets:
 
 | Secret | Value |
 | --- | --- |
@@ -56,4 +56,4 @@ Trusted branches can also produce an ad hoc IPA for registered test devices. Cre
 | `IOS_DISTRIBUTION_CERTIFICATE_PASSWORD` | Password for the PKCS#12 certificate |
 | `IOS_BETA_PROVISIONING_PROFILE_BASE64` | Base64-encoded ad hoc provisioning profile for `com.dunghd.shichidamemorycards`, including each beta device |
 
-Then add the repository Actions variable `ENABLE_SIGNED_BETA` with the value `true`. Keep it unset or set it to `false` when signing is not configured. The IPA remains a workflow artifact; this pull request workflow does not publish a permanent GitHub Release.
+Then add the repository Actions variable `ENABLE_SIGNED_BETA` with the value `true`. Keep it unset or set it to `false` when signing is not configured. Run **Apple beta builds** manually from `main` to create the IPA. The IPA remains a workflow artifact; this workflow does not publish a permanent GitHub Release.

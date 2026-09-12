@@ -16,8 +16,7 @@ final class CardPlayer: ObservableObject {
     }
 
     func stop() {
-        revealTask?.cancel()
-        advanceTask?.cancel()
+        cancelScheduledTasks()
         audioPlayer?.pause()
     }
 
@@ -26,16 +25,17 @@ final class CardPlayer: ObservableObject {
     }
 
     func goBack() {
+        cancelScheduledTasks()
         sequence.goBack()
     }
 
     func goForward() {
+        cancelScheduledTasks()
         sequence.goForward()
     }
 
     private func scheduleCurrentCard(_ card: MemoryCard) {
-        revealTask?.cancel()
-        advanceTask?.cancel()
+        cancelScheduledTasks()
         isAnswerVisible = false
         play(card.mp3)
 
@@ -51,6 +51,11 @@ final class CardPlayer: ObservableObject {
             guard !Task.isCancelled else { return }
             sequence.goForward()
         }
+    }
+
+    private func cancelScheduledTasks() {
+        revealTask?.cancel()
+        advanceTask?.cancel()
     }
 
     private func play(_ url: URL) {
