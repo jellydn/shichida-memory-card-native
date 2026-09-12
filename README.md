@@ -35,3 +35,25 @@ xcodebuild test \
   -destination "platform=macOS" \
   CODE_SIGNING_ALLOWED=NO
 ```
+
+## Pull request beta builds
+
+The **Apple beta builds** GitHub Actions workflow tests every pull request and uploads two artifacts for 7 days:
+
+- An ad-hoc signed, non-notarized macOS app. On first launch, Control-click the app and select **Open**. Gatekeeper can also require **System Settings → Privacy & Security → Open Anyway**.
+- An Apple Silicon iOS Simulator app. Boot a simulator and install the unzipped app with `xcrun simctl install booted "Shichida Memory Cards.app"`.
+
+The workflow does not pass secrets to these builds. Fork pull requests receive the same secret-free artifacts but cannot access the protected signing job or its write-capable PR comment job.
+
+### Optional signed iOS beta
+
+Trusted branches can also produce an ad hoc IPA for registered test devices. Create a GitHub environment named `beta`, restrict its deployment branches to trusted repository branches, and add these environment secrets:
+
+| Secret | Value |
+| --- | --- |
+| `APPLE_TEAM_ID` | Apple Developer team identifier |
+| `IOS_DISTRIBUTION_CERTIFICATE_BASE64` | Base64-encoded PKCS#12 Apple Distribution certificate (`.p12`) |
+| `IOS_DISTRIBUTION_CERTIFICATE_PASSWORD` | Password for the PKCS#12 certificate |
+| `IOS_BETA_PROVISIONING_PROFILE_BASE64` | Base64-encoded ad hoc provisioning profile for `com.dunghd.shichidamemorycards`, including each beta device |
+
+Then add the repository Actions variable `ENABLE_SIGNED_BETA` with the value `true`. Keep it unset or set it to `false` when signing is not configured. The IPA remains a workflow artifact; this pull request workflow does not publish a permanent GitHub Release.
