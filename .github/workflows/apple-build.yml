@@ -19,8 +19,6 @@ jobs:
     runs-on: macos-26
     outputs:
       artifact_label: ${{ steps.metadata.outputs.artifact_label }}
-      ios_archive: ${{ steps.metadata.outputs.ios_archive }}
-      macos_archive: ${{ steps.metadata.outputs.macos_archive }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -47,8 +45,10 @@ jobs:
         run: |
           if [[ -n "$PR_NUMBER" ]]; then
             build_label="pr-${PR_NUMBER}"
-          else
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
             build_label="manual-${GITHUB_RUN_NUMBER}"
+          else
+            build_label="main-${GITHUB_RUN_NUMBER}"
           fi
 
           short_sha="${SOURCE_SHA::7}"
