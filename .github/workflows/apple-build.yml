@@ -105,7 +105,7 @@ jobs:
 
       - name: Ad-hoc sign and verify macOS app
         run: |
-          app_path=".build/DerivedData/Build/Products/Release/Shichida Memory Cards.app"
+          app_path=".build/DerivedData/Build/Products/Release/Shichida Memory Cards macOS.app"
           test -d "$app_path"
           codesign --force --deep --sign - "$app_path"
           codesign --verify --deep --strict --verbose=2 "$app_path"
@@ -121,14 +121,14 @@ jobs:
             -k \
             --sequesterRsrc \
             --keepParent \
-            ".build/DerivedData/Build/Products/Release/Shichida Memory Cards.app" \
+            ".build/DerivedData/Build/Products/Release/Shichida Memory Cards macOS.app" \
             ".build/artifacts/$MACOS_ARCHIVE"
           ditto \
             -c \
             -k \
             --sequesterRsrc \
             --keepParent \
-            ".build/DerivedData/Build/Products/Release-iphonesimulator/Shichida Memory Cards.app" \
+            ".build/DerivedData/Build/Products/Release-iphonesimulator/Shichida Memory Cards iOS.app" \
             ".build/artifacts/$IOS_ARCHIVE"
 
       - name: Upload macOS beta
@@ -157,7 +157,7 @@ jobs:
           ## Test Shichida Memory Cards beta ${ARTIFACT_LABEL}
 
           - **macOS:** Download the macOS artifact, unzip it, then Control-click the app and select **Open**. It has an ad-hoc signature and is not notarized, so Gatekeeper can require **System Settings → Privacy & Security → Open Anyway**.
-          - **iOS Simulator:** Download and unzip the simulator artifact, boot a simulator, then run `xcrun simctl install booted "Shichida Memory Cards.app"`.
+          - **iOS Simulator:** Download and unzip the simulator artifact, boot a simulator, then run `xcrun simctl install booted "Shichida Memory Cards iOS.app"`.
 
           Both artifacts expire after 7 days. A device-installable IPA is also produced when the protected beta signing environment is enabled for a trusted branch.
           EOF

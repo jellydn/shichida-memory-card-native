@@ -41,7 +41,7 @@ xcodebuild test \
 The **Apple beta builds** GitHub Actions workflow tests every pull request and uploads two artifacts for 7 days:
 
 - An ad-hoc signed, non-notarized macOS app. On first launch, Control-click the app and select **Open**. Gatekeeper can also require **System Settings → Privacy & Security → Open Anyway**.
-- An Apple Silicon iOS Simulator app. Boot a simulator and install the unzipped app with `xcrun simctl install booted "Shichida Memory Cards.app"`.
+- An Apple Silicon iOS Simulator app. Boot a simulator and install the unzipped app with `xcrun simctl install booted "Shichida Memory Cards iOS.app"`.
 
 The workflow does not pass secrets to these builds. Fork pull requests receive the same secret-free artifacts but cannot access the protected signing job or its write-capable PR comment job.
 
